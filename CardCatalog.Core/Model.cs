@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace CardCatalog.Core
 {
@@ -21,6 +21,10 @@ namespace CardCatalog.Core
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // this is needed to set a unique constraint on TagTitle column in Tags table
+            modelBuilder.Entity<Tag>()
+                .HasAlternateKey(c => c.TagTitle)
+                .HasName("AlternateKey_TagTitle");
         }
     }
 

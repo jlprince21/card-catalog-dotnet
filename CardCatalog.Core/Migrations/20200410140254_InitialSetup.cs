@@ -35,6 +35,7 @@ namespace CardCatalog.Core.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
+                    table.UniqueConstraint("AlternateKey_TagTitle", x => x.TagTitle);
                 });
 
             migrationBuilder.CreateTable(

@@ -1,5 +1,5 @@
-﻿using System;
-using CardCatalog.Core;
+﻿using CardCatalog.Core;
+using System;
 using System.Threading.Tasks;
 
 namespace CardCatalog.CLI

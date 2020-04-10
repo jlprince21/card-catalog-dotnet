@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CardCatalog.Core.Migrations
 {
     [DbContext(typeof(CardCatalogContext))]
-    [Migration("20200410134146_InitialSetup")]
+    [Migration("20200410140254_InitialSetup")]
     partial class InitialSetup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -80,6 +80,9 @@ namespace CardCatalog.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("TagTitle")
+                        .HasName("AlternateKey_TagTitle");
 
                     b.ToTable("Tags");
                 });

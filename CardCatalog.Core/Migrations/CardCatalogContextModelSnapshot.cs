@@ -79,6 +79,9 @@ namespace CardCatalog.Core.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("TagTitle")
+                        .HasName("AlternateKey_TagTitle");
+
                     b.ToTable("Tags");
                 });
 

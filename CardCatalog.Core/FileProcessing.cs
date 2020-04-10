@@ -1,10 +1,7 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore;
-
-using System.Threading.Tasks;
-using System.Data.HashFunction;
 using System.Data.HashFunction.xxHash;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace CardCatalog.Core
 {
@@ -45,6 +42,23 @@ namespace CardCatalog.Core
                     FileName = fileName,
                     FilePath = filePath,
                     FileSize = fileSize,
+                });
+
+                var count = await _db.SaveChangesAsync();
+                return count < 1 ? false : true;
+            }
+        }
+
+        public async Task<bool> CreateTag(string tag)
+        {
+            using (_db)
+            {
+                // TODO 20-04-10 First see if tag already exists
+                // and if so don't try to create a new one
+
+                _db.Tags.Add(new Tag
+                {
+                    TagTitle = tag
                 });
 
                 var count = await _db.SaveChangesAsync();
