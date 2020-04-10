@@ -11,10 +11,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.3" />
+    <PackageReference Include="System.Data.HashFunction.xxHash" Version="2.0.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CardCatalog.Entities\CardCatalog.Entities.csproj" />
-  </ItemGroup>
-
 </Project>

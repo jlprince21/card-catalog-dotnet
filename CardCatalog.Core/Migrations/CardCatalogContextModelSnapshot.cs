@@ -16,7 +16,7 @@ namespace CardCatalog.Core.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.3");
 
-            modelBuilder.Entity("CardCatalog.Entities.Listing", b =>
+            modelBuilder.Entity("CardCatalog.Core.Listing", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -44,7 +44,7 @@ namespace CardCatalog.Core.Migrations
                     b.ToTable("Listings");
                 });
 
-            modelBuilder.Entity("CardCatalog.Entities.ListingTag", b =>
+            modelBuilder.Entity("CardCatalog.Core.ListingTag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -67,7 +67,7 @@ namespace CardCatalog.Core.Migrations
                     b.ToTable("ListingTags");
                 });
 
-            modelBuilder.Entity("CardCatalog.Entities.Tag", b =>
+            modelBuilder.Entity("CardCatalog.Core.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,15 +82,15 @@ namespace CardCatalog.Core.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("CardCatalog.Entities.ListingTag", b =>
+            modelBuilder.Entity("CardCatalog.Core.ListingTag", b =>
                 {
-                    b.HasOne("CardCatalog.Entities.Listing", "ListingRefId")
+                    b.HasOne("CardCatalog.Core.Listing", "ListingRefId")
                         .WithMany()
                         .HasForeignKey("Listing")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CardCatalog.Entities.Tag", "TagRefId")
+                    b.HasOne("CardCatalog.Core.Tag", "TagRefId")
                         .WithMany()
                         .HasForeignKey("Tag")
                         .OnDelete(DeleteBehavior.Cascade)
