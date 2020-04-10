@@ -12,11 +12,14 @@ namespace CardCatalog.CLI
             {
                 var y = new FileProcessing();
 
-                var createListingResult = await y.CreateListing(checksum: "test", fileName: "test", fileSize: 50, filePath: "blah");
-                Console.WriteLine("createListingResult: " + createListingResult);
+                // var createListingResult = await y.CreateListing(checksum: "test", fileName: "test", fileSize: 50, filePath: "blah");
+                // Console.WriteLine("createListingResult: " + createListingResult);
 
-                var hashFileResult = y.HashFile("/Users/jlprince21/Desktop/test.txt");
-                Console.WriteLine("hashFileResult: " + hashFileResult.success + " " +hashFileResult.hash);
+                // var hashFileResult = y.HashFile("/Users/jlprince21/Desktop/test.txt");
+                // Console.WriteLine("hashFileResult: " + hashFileResult.success + " " +hashFileResult.hash);
+
+                var createTagResult = await y.CreateTag("test");
+                Console.WriteLine("createTagResult: " + createTagResult);
             }
             catch (Exception ex)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.HashFunction.xxHash;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CardCatalog.Core
@@ -53,16 +54,21 @@ namespace CardCatalog.Core
         {
             using (_db)
             {
-                // TODO 20-04-10 First see if tag already exists
-                // and if so don't try to create a new one
+                var existsCheck = _db.Tags.FirstOrDefault(x => x.TagTitle.ToUpper() == tag.ToUpper());
 
-                _db.Tags.Add(new Tag
+                if (existsCheck == null)
                 {
-                    TagTitle = tag
-                });
-
-                var count = await _db.SaveChangesAsync();
-                return count < 1 ? false : true;
+                    _db.Tags.Add(new Tag
+                    {
+                        TagTitle = tag
+                    });
+                    var count = await _db.SaveChangesAsync();
+                    return count < 1 ? false : true;
+                }
+                else
+                {
+                    return true;
+                }
             }
         }
     }
