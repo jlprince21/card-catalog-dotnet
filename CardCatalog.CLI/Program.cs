@@ -18,8 +18,13 @@ namespace CardCatalog.CLI
                 // var hashFileResult = y.HashFile("/Users/jlprince21/Desktop/test.txt");
                 // Console.WriteLine("hashFileResult: " + hashFileResult.success + " " +hashFileResult.hash);
 
-                var createTagResult = await y.CreateTag("test");
-                Console.WriteLine("createTagResult: " + createTagResult);
+                // var createTagResult = await y.CreateTag("test");
+                // Console.WriteLine("createTagResult: " + createTagResult);
+
+                // await y.ScanFiles("/Users/jlprince21/Desktop/scantest");
+                // FileProcessing.ScanFiles("/Volumes/alexandria/luke");
+
+                y.DeleteOrphans(deleteListingOnOrphanFound: true);
             }
             catch (Exception ex)
             {
