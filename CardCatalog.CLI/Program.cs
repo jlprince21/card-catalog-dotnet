@@ -22,9 +22,9 @@ namespace CardCatalog.CLI
                 // Console.WriteLine("createTagResult: " + createTagResult);
 
                 // await y.ScanFiles("/Users/jlprince21/Desktop/scantest");
-                // FileProcessing.ScanFiles("/Volumes/alexandria/luke");
+                // await y.ScanFiles("/Volumes/alexandria/luke");
 
-                y.DeleteOrphans(deleteListingOnOrphanFound: true);
+                await y.DeleteOrphans(deleteListingOnOrphanFound: true);
             }
             catch (Exception ex)
             {

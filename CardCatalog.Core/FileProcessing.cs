@@ -43,7 +43,7 @@ namespace CardCatalog.Core
             }
         }
 
-        public void DeleteOrphans(bool deleteListingOnOrphanFound)
+        public async Task DeleteOrphans(bool deleteListingOnOrphanFound)
         {
             var listings = _db.Listings;
 
@@ -60,7 +60,7 @@ namespace CardCatalog.Core
                     if (deleteListingOnOrphanFound == true)
                     {
                         Console.WriteLine("Deleting orphan");
-                        DeleteListing(listing);
+                        await DeleteListing(listing);
                     }
                 }
                 else
@@ -134,6 +134,7 @@ namespace CardCatalog.Core
         {
             _db.Listings.Add(new Listing
             {
+                Id = Guid.NewGuid(),
                 Checksum = checksum,
                 Created = DateTime.UtcNow,
                 FileName = fileName,
@@ -165,6 +166,7 @@ namespace CardCatalog.Core
             {
                 _db.Tags.Add(new Tag
                 {
+                    Id = Guid.NewGuid(),
                     TagTitle = tag
                 });
                 var count = await _db.SaveChangesAsync();
