@@ -21,10 +21,10 @@ namespace CardCatalog.Core
         {
             foreach (string file in GetFiles(rootFilePath))
             {
-                Console.WriteLine(file + " InDB: " + InDatabase(file));
+                Console.WriteLine(file + " InDB: " + FilePathInDatabase(file));
 
                 // check if file is already in database
-                if (InDatabase(file) == false)
+                if (FilePathInDatabase(file) == false)
                 {
                     var info = new FileInfo(file);
                     var fileExists = info.Exists;
@@ -70,10 +70,16 @@ namespace CardCatalog.Core
             }
         }
 
-        public bool InDatabase(string filePath)
+        public bool FilePathInDatabase(string filePath)
         {
             var check = _db.Listings.FirstOrDefault(x => x.FilePath == filePath);
             return check == null ? false : true;
+        }
+
+        public (bool present, Listing listing) ListingInDatabase(string listingId)
+        {
+            var check = _db.Listings.FirstOrDefault(x => x.Id == Guid.Parse(listingId));
+            return check == null ? (false, null) : (true, check);
         }
 
         public IEnumerable<string> GetFiles(string path)
@@ -158,23 +164,49 @@ namespace CardCatalog.Core
             var res = await _db.SaveChangesAsync();
         }
 
-        public async Task<bool> CreateTag(string tag)
+        public async Task<(bool success, Tag tagInDatabase)> CreateTag(string tag)
         {
             var existsCheck = _db.Tags.FirstOrDefault(x => x.TagTitle.ToUpper() == tag.ToUpper());
 
             if (existsCheck == null)
             {
-                _db.Tags.Add(new Tag
+                Tag newTag = new Tag
                 {
                     Id = Guid.NewGuid(),
                     TagTitle = tag
-                });
+                };
+                _db.Tags.Add(newTag);
                 var count = await _db.SaveChangesAsync();
-                return count < 1 ? false : true;
+                return count < 1 ? (false, null) : (true, newTag);
             }
             else
             {
-                return true;
+                return (true, existsCheck);
+            }
+        }
+
+        public async Task<bool> LinkTagToListing(string listingId, string tag)
+        {
+            var listingIdInDatabase = ListingInDatabase(listingId);
+
+            if (listingIdInDatabase.present == true)
+            {
+                var tagResult = await CreateTag(tag);
+
+                if (tagResult.success == true)
+                {
+                    _db.ListingTags.Add(new ListingTag { Id = Guid.NewGuid(), ListingRefId = listingIdInDatabase.listing, TagRefId = tagResult.tagInDatabase});
+                    var count = await _db.SaveChangesAsync();
+                    return count < 1 ? false : true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
     }

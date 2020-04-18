@@ -24,7 +24,9 @@ namespace CardCatalog.CLI
                 // await y.ScanFiles("/Users/jlprince21/Desktop/scantest");
                 // await y.ScanFiles("/Volumes/alexandria/luke");
 
-                await y.DeleteOrphans(deleteListingOnOrphanFound: true);
+                // await y.DeleteOrphans(deleteListingOnOrphanFound: true);
+
+                await y.LinkTagToListing("7C8D2C05-3037-4058-9C95-42A6400A6D48", "iAmANewTag");
             }
             catch (Exception ex)
             {
