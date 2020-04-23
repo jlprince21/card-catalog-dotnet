@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CardCatalog.Core.Migrations
 {
     [DbContext(typeof(CardCatalogContext))]
-    [Migration("20200410140254_InitialSetup")]
+    [Migration("20200415111910_InitialSetup")]
     partial class InitialSetup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,9 +20,10 @@ namespace CardCatalog.Core.Migrations
 
             modelBuilder.Entity("CardCatalog.Core.Listing", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Checksum")
                         .HasColumnType("TEXT");
@@ -48,17 +49,18 @@ namespace CardCatalog.Core.Migrations
 
             modelBuilder.Entity("CardCatalog.Core.ListingTag", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("NEWID()");
 
-                    b.Property<int?>("Listing")
+                    b.Property<Guid?>("Listing")
                         .IsRequired()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("Tag")
+                    b.Property<Guid?>("Tag")
                         .IsRequired()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -71,9 +73,10 @@ namespace CardCatalog.Core.Migrations
 
             modelBuilder.Entity("CardCatalog.Core.Tag", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("TagTitle")
                         .IsRequired()

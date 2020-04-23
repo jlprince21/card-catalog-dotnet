@@ -11,8 +11,7 @@ namespace CardCatalog.Core.Migrations
                 name: "Listings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "NEWID()"),
                     Checksum = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     FileName = table.Column<string>(nullable: false),
@@ -28,8 +27,7 @@ namespace CardCatalog.Core.Migrations
                 name: "Tags",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "NEWID()"),
                     TagTitle = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
@@ -42,10 +40,9 @@ namespace CardCatalog.Core.Migrations
                 name: "ListingTags",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Listing = table.Column<int>(nullable: false),
-                    Tag = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "NEWID()"),
+                    Listing = table.Column<Guid>(nullable: false),
+                    Tag = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {

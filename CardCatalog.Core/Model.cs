@@ -21,6 +21,10 @@ namespace CardCatalog.Core
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Listing>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+            modelBuilder.Entity<Tag>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+            modelBuilder.Entity<ListingTag>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+
             // this is needed to set a unique constraint on TagTitle column in Tags table
             modelBuilder.Entity<Tag>()
                 .HasAlternateKey(c => c.TagTitle)
@@ -32,7 +36,7 @@ namespace CardCatalog.Core
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Checksum { get; set; }
 
@@ -52,7 +56,7 @@ namespace CardCatalog.Core
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public string TagTitle { get; set; }
@@ -62,7 +66,7 @@ namespace CardCatalog.Core
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [ForeignKey("Listing")]
         [Required]
