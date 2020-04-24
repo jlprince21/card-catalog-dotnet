@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CardCatalog.Core.Migrations
 {
     [DbContext(typeof(CardCatalogContext))]
-    [Migration("20200415111910_InitialSetup")]
+    [Migration("20200424005148_InitialSetup")]
     partial class InitialSetup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,13 +95,13 @@ namespace CardCatalog.Core.Migrations
                     b.HasOne("CardCatalog.Core.Listing", "ListingRefId")
                         .WithMany()
                         .HasForeignKey("Listing")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CardCatalog.Core.Tag", "TagRefId")
                         .WithMany()
                         .HasForeignKey("Tag")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace CardCatalog.Core
 {
@@ -29,6 +30,12 @@ namespace CardCatalog.Core
             modelBuilder.Entity<Tag>()
                 .HasAlternateKey(c => c.TagTitle)
                 .HasName("AlternateKey_TagTitle");
+
+            // force all foreign key contraints to restrict deletion
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
         }
     }
 
