@@ -14,7 +14,10 @@ namespace CardCatalog.Core
 
         public CardCatalogContext()
         {
-            Database.EnsureCreated();
+             // NOTE 2020-04-23 this may come in handy for verifying the database
+             // is created at startup in other projects but it will cause issues
+             // when trying to run migrations inside this project. Keeping just in case
+             // Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
