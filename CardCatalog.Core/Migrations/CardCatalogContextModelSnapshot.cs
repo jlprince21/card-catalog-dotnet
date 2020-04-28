@@ -93,13 +93,13 @@ namespace CardCatalog.Core.Migrations
                     b.HasOne("CardCatalog.Core.Listing", "ListingRefId")
                         .WithMany()
                         .HasForeignKey("Listing")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CardCatalog.Core.Tag", "TagRefId")
                         .WithMany()
                         .HasForeignKey("Tag")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace CardCatalog.Core
 {
@@ -13,7 +14,10 @@ namespace CardCatalog.Core
 
         public CardCatalogContext()
         {
-            Database.EnsureCreated();
+             // NOTE 2020-04-23 this may come in handy for verifying the database
+             // is created at startup in other projects but it will cause issues
+             // when trying to run migrations inside this project. Keeping just in case
+             // Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
@@ -29,6 +33,12 @@ namespace CardCatalog.Core
             modelBuilder.Entity<Tag>()
                 .HasAlternateKey(c => c.TagTitle)
                 .HasName("AlternateKey_TagTitle");
+
+            // force all foreign key contraints to restrict deletion
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
         }
     }
 
