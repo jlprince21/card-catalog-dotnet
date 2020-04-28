@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace CardCatalog.CLI
 {
-    class Program
+    public class Program
     {
         public static async Task Main(string[] args)
         {
