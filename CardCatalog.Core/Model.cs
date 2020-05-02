@@ -12,16 +12,24 @@ namespace CardCatalog.Core
         public DbSet<ListingTag> ListingTags { get; set; }
         public DbSet<Tag> Tags { get; set; }
 
-        public CardCatalogContext()
-        {
-             // NOTE 2020-04-23 this may come in handy for verifying the database
-             // is created at startup in other projects but it will cause issues
-             // when trying to run migrations inside this project. Keeping just in case
-             // Database.EnsureCreated();
-        }
+        // NOTE 2020-05-02 This constructor and OnConfiguring were used when the
+        // CLI project was main way of interacting with the Core project. If troubles
+        // arise using migrations or when attaching another project to the solution
+        // may need these back in here.
+        // public CardCatalogContext()
+        // {
+        //      // NOTE 2020-04-23 this may come in handy for verifying the database
+        //      // is created at startup in other projects but it will cause issues
+        //      // when trying to run migrations inside this project. Keeping just in case
+        //      // Database.EnsureCreated();
+        // }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite("Data Source=card_catalog.db");
+        // protected override void OnConfiguring(DbContextOptionsBuilder options)
+        //     => options.UseSqlite("Data Source=card_catalog.db");
+
+        public CardCatalogContext(DbContextOptions<CardCatalogContext> options) : base(options)
+        {
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

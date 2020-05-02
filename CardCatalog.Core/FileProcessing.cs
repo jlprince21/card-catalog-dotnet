@@ -12,9 +12,9 @@ namespace CardCatalog.Core
         CardCatalogContext _db;
         public static readonly IxxHash _xxHash = xxHashFactory.Instance.Create();
 
-        public FileProcessing()
+        public FileProcessing(CardCatalogContext context)
         {
-            _db = new CardCatalogContext();
+            _db = context;
         }
 
         public async Task ScanFiles(string rootFilePath)
