@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardCatalog.Api.Helpers;
+using CardCatalog.Api.Models;
 using CardCatalog.Core;
 
 namespace CardCatalog.Api.Controllers
@@ -25,14 +26,34 @@ namespace CardCatalog.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateTag([FromBody]ApiNewTag body)
         {
-            var y = new FileProcessing(_db);
-            var createTagResult = await y.CreateTag("test2");
-            Console.WriteLine("createTagResult: " + createTagResult);
+            if (body == null || body.Title == null || body.Title == string.Empty)
+            {
+                return BadRequest("Tag title null or empty");
+            }
 
-            return Ok("hello from tags" + createTagResult.success);
+            var y = new FileProcessing(_db);
+            var result = await y.CreateTag(body.Title);
+
+            return Ok("Tag create result: " + result.success);
         }
+
+        [AllowAnonymous]
+        [HttpPost("delete")]
+        public async Task<IActionResult> DeleteTag([FromBody]ApiNewTag body)
+        {
+            if (body == null || body.Title == null || body.Title == string.Empty)
+            {
+                return BadRequest("Tag title null or empty");
+            }
+
+            var y = new FileProcessing(_db);
+            var result = await y.DeleteTag(body.Title);
+
+            return Ok("Tag delete result: " + result);
+        }
+
     }
 }
