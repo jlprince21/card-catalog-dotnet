@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Configuration;
 using System.Linq;
 
 namespace CardCatalog.Core
@@ -11,6 +12,8 @@ namespace CardCatalog.Core
         public DbSet<Listing> Listings { get; set; }
         public DbSet<ListingTag> ListingTags { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<Container> Containers { get; set; }
 
         // NOTE 2020-05-02 This constructor and OnConfiguring were used when the
         // CLI project was main way of interacting with the Core project. If troubles
@@ -27,6 +30,12 @@ namespace CardCatalog.Core
         // protected override void OnConfiguring(DbContextOptionsBuilder options)
         //     => options.UseSqlite("Data Source=card_catalog.db");
 
+        public CardCatalogContext() { }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlite("Data Source=" + ConfigurationManager.AppSettings["DatabasePath"]);
+        }
+
         public CardCatalogContext(DbContextOptions<CardCatalogContext> options) : base(options)
         {
         }
@@ -36,6 +45,8 @@ namespace CardCatalog.Core
             modelBuilder.Entity<Listing>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
             modelBuilder.Entity<Tag>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
             modelBuilder.Entity<ListingTag>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+            modelBuilder.Entity<Item>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+            modelBuilder.Entity<Container>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
 
             // this is needed to set a unique constraint on TagTitle column in Tags table
             modelBuilder.Entity<Tag>()
@@ -93,5 +104,29 @@ namespace CardCatalog.Core
         [ForeignKey("Tag")]
         [Required]
         public Tag TagRefId { get; set; }
+    }
+
+    public class Item
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
+        public Guid Id { get; set; }
+
+        [ForeignKey("Container")]
+        [Required]
+        public Container ContainerRefId { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+    }
+
+    public class Container
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
+        public Guid Id { get; set; }
+
+        [Required]
+        public string Description { get; set; }
     }
 }
