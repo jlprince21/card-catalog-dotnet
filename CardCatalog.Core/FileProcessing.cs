@@ -54,7 +54,7 @@ namespace CardCatalog.Core
         public async Task DeleteOrphans(bool deleteListingOnOrphanFound)
         {
             long orphansFound = 0;
-            var listings = _db.Listings;
+            var listings = _db.Files;
 
             foreach (var listing in listings)
             {
@@ -84,13 +84,13 @@ namespace CardCatalog.Core
 
         public bool FilePathInDatabase(string filePath)
         {
-            var check = _db.Listings.FirstOrDefault(x => x.FilePath == filePath);
+            var check = _db.Files.FirstOrDefault(x => x.FilePath == filePath);
             return check == null ? false : true;
         }
 
-        public (bool present, Listing listing) ListingInDatabase(string listingId)
+        public (bool present, File listing) ListingInDatabase(string listingId)
         {
-            var check = _db.Listings.FirstOrDefault(x => x.Id == Guid.Parse(listingId));
+            var check = _db.Files.FirstOrDefault(x => x.Id == Guid.Parse(listingId));
             return check == null ? (false, null) : (true, check);
         }
 
@@ -163,11 +163,11 @@ namespace CardCatalog.Core
         /// <returns>Bool indicating success/failure.</returns>
         public async Task<bool> CreateListing(string checksum, string fileName, string filePath, long fileSize)
         {
-            _db.Listings.Add(new Listing
+            _db.Files.Add(new File
             {
                 Id = Guid.NewGuid(),
                 Checksum = checksum,
-                Created = DateTime.UtcNow,
+                FoundOn = DateTime.UtcNow,
                 FileName = fileName,
                 FilePath = filePath,
                 FileSize = fileSize,
@@ -182,15 +182,15 @@ namespace CardCatalog.Core
         /// </summary>
         /// <param name="listing">Listing to be deleted.</param>
         /// <returns>Bool indicating success/failure.</returns>
-        public async Task<bool> DeleteListing(Listing listing)
+        public async Task<bool> DeleteListing(File listing)
         {
-            var appliedTags = _db.ListingTags.Where(x => x.ListingRefId.Id == listing.Id);
+            var appliedTags = _db.AppliedTags.Where(x => x.FileRefId.Id == listing.Id);
             foreach (var x in appliedTags)
             {
-                _db.ListingTags.Remove(x);
+                _db.AppliedTags.Remove(x);
             }
 
-            _db.Listings.Remove(listing);
+            _db.Files.Remove(listing);
             var count = await _db.SaveChangesAsync();
             return count >= 1 ? true : false;
         }
@@ -258,10 +258,10 @@ namespace CardCatalog.Core
         /// <returns>Bool indicating a likely success if at least one association deleted.</returns>
         public async Task<bool> DisassociateTagFromAllListings(Guid tagId)
         {
-            var appliedTags = _db.ListingTags.Where(x => x.TagRefId.Id == tagId);
+            var appliedTags = _db.AppliedTags.Where(x => x.TagRefId.Id == tagId);
             foreach (var x in appliedTags)
             {
-                _db.ListingTags.Remove(x);
+                _db.AppliedTags.Remove(x);
             }
 
             var count = await _db.SaveChangesAsync();
@@ -284,7 +284,7 @@ namespace CardCatalog.Core
 
                 if (tagResult.success == true)
                 {
-                    _db.ListingTags.Add(new ListingTag { Id = Guid.NewGuid(), ListingRefId = listingIdInDatabase.listing, TagRefId = tagResult.tagInDatabase});
+                    _db.AppliedTags.Add(new AppliedTag { Id = Guid.NewGuid(), FileRefId = listingIdInDatabase.listing, TagRefId = tagResult.tagInDatabase});
                     var count = await _db.SaveChangesAsync();
                     return count < 1 ? false : true;
                 }

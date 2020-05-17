@@ -2,7 +2,6 @@
 using CommandLine;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Configuration;
 using System.Threading.Tasks;
 
 namespace CardCatalog.Terminal
@@ -21,7 +20,7 @@ namespace CardCatalog.Terminal
         public static async Task Main(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<CardCatalogContext>();
-            optionsBuilder.UseSqlite("Data Source=" + ConfigurationManager.AppSettings["DatabasePath"]);
+            optionsBuilder.UseSqlite(Environment.GetEnvironmentVariable("CARD_CATALOG_SQLITE_PATH"));
             CardCatalogContext dbContext = new CardCatalogContext(optionsBuilder.Options);
             var y = new FileProcessing(dbContext);
 

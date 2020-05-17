@@ -16,7 +16,51 @@ namespace CardCatalog.Core.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.3");
 
-            modelBuilder.Entity("CardCatalog.Core.Listing", b =>
+            modelBuilder.Entity("CardCatalog.Core.AppliedTag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid?>("File")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("Item")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("Tag")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("File");
+
+                    b.HasIndex("Item");
+
+                    b.HasIndex("Tag");
+
+                    b.ToTable("AppliedTags");
+                });
+
+            modelBuilder.Entity("CardCatalog.Core.Container", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Containers");
+                });
+
+            modelBuilder.Entity("CardCatalog.Core.File", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -24,9 +68,6 @@ namespace CardCatalog.Core.Migrations
                         .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Checksum")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FileName")
@@ -40,33 +81,34 @@ namespace CardCatalog.Core.Migrations
                     b.Property<long>("FileSize")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("FoundOn")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Listings");
+                    b.ToTable("Files");
                 });
 
-            modelBuilder.Entity("CardCatalog.Core.ListingTag", b =>
+            modelBuilder.Entity("CardCatalog.Core.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<Guid?>("Listing")
+                    b.Property<Guid?>("Container")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("Tag")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Listing");
+                    b.HasIndex("Container");
 
-                    b.HasIndex("Tag");
-
-                    b.ToTable("ListingTags");
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("CardCatalog.Core.Tag", b =>
@@ -88,17 +130,30 @@ namespace CardCatalog.Core.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("CardCatalog.Core.ListingTag", b =>
+            modelBuilder.Entity("CardCatalog.Core.AppliedTag", b =>
                 {
-                    b.HasOne("CardCatalog.Core.Listing", "ListingRefId")
+                    b.HasOne("CardCatalog.Core.File", "FileRefId")
                         .WithMany()
-                        .HasForeignKey("Listing")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("File")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CardCatalog.Core.Item", "ItemRefId")
+                        .WithMany()
+                        .HasForeignKey("Item")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CardCatalog.Core.Tag", "TagRefId")
                         .WithMany()
                         .HasForeignKey("Tag")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CardCatalog.Core.Item", b =>
+                {
+                    b.HasOne("CardCatalog.Core.Container", "ContainerRefId")
+                        .WithMany()
+                        .HasForeignKey("Container")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

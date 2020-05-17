@@ -2,18 +2,22 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Configuration;
 using System.Linq;
 
 namespace CardCatalog.Core
 {
     public class CardCatalogContext : DbContext
     {
-        public DbSet<Listing> Listings { get; set; }
-        public DbSet<ListingTag> ListingTags { get; set; }
-        public DbSet<Tag> Tags { get; set; }
-        public DbSet<Item> Items { get; set; }
+        // computer file tables
+        public DbSet<File> Files { get; set; }
+
+        // physical object tables
         public DbSet<Container> Containers { get; set; }
+        public DbSet<Item> Items { get; set; }
+
+        // shared tables
+        public DbSet<AppliedTag> AppliedTags { get; set; }
+        public DbSet<Tag> Tags { get; set; }
 
         // NOTE 2020-05-02 This constructor and OnConfiguring were used when the
         // CLI project was main way of interacting with the Core project. If troubles
@@ -28,12 +32,15 @@ namespace CardCatalog.Core
         // }
 
         // protected override void OnConfiguring(DbContextOptionsBuilder options)
-        //     => options.UseSqlite("Data Source=card_catalog.db");
+        //     => options.UseSqlite(_connection);
 
-        public CardCatalogContext() { }
+        // eg: "Data Source=/path/to/card_catalog_core.db";
+        private readonly string  _connection = Environment.GetEnvironmentVariable("CARD_CATALOG_SQLITE_PATH");
+
+        public CardCatalogContext() {}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=" + ConfigurationManager.AppSettings["DatabasePath"]);
+            optionsBuilder.UseSqlite(_connection);
         }
 
         public CardCatalogContext(DbContextOptions<CardCatalogContext> options) : base(options)
@@ -42,9 +49,9 @@ namespace CardCatalog.Core
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Listing>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+            modelBuilder.Entity<File>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
             modelBuilder.Entity<Tag>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
-            modelBuilder.Entity<ListingTag>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+            modelBuilder.Entity<AppliedTag>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
             modelBuilder.Entity<Item>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
             modelBuilder.Entity<Container>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
 
@@ -61,7 +68,7 @@ namespace CardCatalog.Core
         }
     }
 
-    public class Listing
+    public class File
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
@@ -70,7 +77,7 @@ namespace CardCatalog.Core
         public string Checksum { get; set; }
 
         [Required]
-        public DateTime Created { get; set; }
+        public DateTime FoundOn { get; set; }
 
         [Required]
         public string FileName { get; set; }
@@ -91,15 +98,17 @@ namespace CardCatalog.Core
         public string TagTitle { get; set; }
     }
 
-    public class ListingTag
+    public class AppliedTag
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public Guid Id { get; set; }
 
-        [ForeignKey("Listing")]
-        [Required]
-        public Listing ListingRefId { get; set; }
+        [ForeignKey("File")]
+        public virtual File FileRefId { get; set; }
+
+        [ForeignKey("Item")]
+        public virtual Item ItemRefId { get; set; }
 
         [ForeignKey("Tag")]
         [Required]
