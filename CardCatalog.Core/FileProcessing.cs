@@ -12,12 +12,12 @@ namespace CardCatalog.Core
         CardCatalogContext _db;
         public static readonly IxxHash _xxHash = xxHashFactory.Instance.Create();
 
-        public FileProcessing()
+        public FileProcessing(CardCatalogContext context)
         {
-            _db = new CardCatalogContext();
+            _db = context;
         }
 
-        public async Task ScanFiles(string rootFilePath)
+        public async Task<bool> ScanFiles(string rootFilePath)
         {
             foreach (string file in GetFiles(rootFilePath))
             {
@@ -32,7 +32,7 @@ namespace CardCatalog.Core
                     if (fileExists)
                     {
                         var hashResult = HashFile(file);
-                        await CreateListing(checksum: hashResult.hash, fileName: info.Name, filePath: info.FullName, fileSize: info.Length);
+                        await CreateFile(checksum: hashResult.hash, fileName: info.Name, filePath: info.FullName, fileSize: info.Length);
                     }
                 }
                 else
@@ -41,44 +41,56 @@ namespace CardCatalog.Core
                     Console.WriteLine("File already in database: " + file);
                 }
             }
+            Console.WriteLine("Processing complete");
+            return true;
         }
 
-        public async Task DeleteOrphans(bool deleteListingOnOrphanFound)
+        /// <summary>
+        /// Finds files present in database but not on disk and removes them from database
+        /// if told to do so.
+        /// </summary>
+        /// <param name="deleteFileOnOrphanFound">When true, deletes file and associations if found to be orphan.</param>
+        /// <returns></returns>
+        public async Task DeleteOrphans(bool deleteFileOnOrphanFound)
         {
-            var listings = _db.Listings;
+            long orphansFound = 0;
+            var files = _db.Files;
 
-            foreach (var listing in listings)
+            foreach (var file in files)
             {
-                string filePath = listing.FilePath;
+                string filePath = file.FilePath;
+                var fileInfo = new FileInfo(filePath);
 
-                var file = new FileInfo(filePath);
-
-                if (file.Exists == false)
+                if (fileInfo.Exists == false)
                 {
+                    orphansFound += 1;
                     Console.WriteLine("Orphan found: " + filePath);
 
-                    if (deleteListingOnOrphanFound == true)
+                    if (deleteFileOnOrphanFound == true)
                     {
                         Console.WriteLine("Deleting orphan");
-                        await DeleteListing(listing);
+                        var result = await DeleteListing(file);
+                        Console.WriteLine("Deletion result: " + result);
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Not Orphan found: " + filePath);
+                    Console.WriteLine("File found: " + filePath);
                 }
             }
+
+            Console.WriteLine("Orphans found: " + orphansFound);
         }
 
         public bool FilePathInDatabase(string filePath)
         {
-            var check = _db.Listings.FirstOrDefault(x => x.FilePath == filePath);
+            var check = _db.Files.FirstOrDefault(x => x.FilePath == filePath);
             return check == null ? false : true;
         }
 
-        public (bool present, Listing listing) ListingInDatabase(string listingId)
+        public (bool present, File file) ListingInDatabase(string fileId)
         {
-            var check = _db.Listings.FirstOrDefault(x => x.Id == Guid.Parse(listingId));
+            var check = _db.Files.FirstOrDefault(x => x.Id == Guid.Parse(fileId));
             return check == null ? (false, null) : (true, check);
         }
 
@@ -120,6 +132,11 @@ namespace CardCatalog.Core
             }
         }
 
+        /// <summary>
+        /// Computes a XxHash of a file given its path.
+        /// </summary>
+        /// <param name="filePath">Path to a file.</param>
+        /// <returns>Tuple with a bool indicating success of hashing and a hash if successful.</returns>
         public (bool success, string hash) HashFile(string filePath)
         {
             try
@@ -136,34 +153,53 @@ namespace CardCatalog.Core
             }
         }
 
-        public async Task<bool> CreateListing(string checksum, string fileName, string filePath, long fileSize)
+        /// <summary>
+        /// Creates a new file.
+        /// </summary>
+        /// <param name="checksum">Checksum of file.</param>
+        /// <param name="fileName">Name of file.</param>
+        /// <param name="filePath">Path to file.</param>
+        /// <param name="fileSize">Size in bytes of file.</param>
+        /// <returns>Bool indicating success/failure.</returns>
+        public async Task<bool> CreateFile(string checksum, string fileName, string filePath, long fileSize)
         {
-            _db.Listings.Add(new Listing
+            _db.Files.Add(new File
             {
                 Id = Guid.NewGuid(),
                 Checksum = checksum,
-                Created = DateTime.UtcNow,
+                FoundOn = DateTime.UtcNow,
                 FileName = fileName,
                 FilePath = filePath,
                 FileSize = fileSize,
             });
 
             var count = await _db.SaveChangesAsync();
-            return count < 1 ? false : true;
+            return count >= 1 ? true : false;
         }
 
-        public async Task DeleteListing(Listing listing)
+        /// <summary>
+        /// Deletes a file along with all associated entities (eg tags).
+        /// </summary>
+        /// <param name="file">Listing to be deleted.</param>
+        /// <returns>Bool indicating success/failure.</returns>
+        public async Task<bool> DeleteListing(File file)
         {
-            var appliedTags = _db.ListingTags.Where(x => x.ListingRefId.Id == listing.Id);
+            var appliedTags = _db.AppliedTags.Where(x => x.FileRefId.Id == file.Id);
             foreach (var x in appliedTags)
             {
-                _db.ListingTags.Remove(x);
+                _db.AppliedTags.Remove(x);
             }
 
-            _db.Listings.Remove(listing);
-            var res = await _db.SaveChangesAsync();
+            _db.Files.Remove(file);
+            var count = await _db.SaveChangesAsync();
+            return count >= 1 ? true : false;
         }
 
+        /// <summary>
+        /// Creates a new tag.
+        /// </summary>
+        /// <param name="tag">Text of tag to create.</param>
+        /// <returns>Bool indicating success/failure.</returns>
         public async Task<(bool success, Tag tagInDatabase)> CreateTag(string tag)
         {
             var existsCheck = _db.Tags.FirstOrDefault(x => x.TagTitle.ToUpper() == tag.ToUpper());
@@ -185,17 +221,70 @@ namespace CardCatalog.Core
             }
         }
 
-        public async Task<bool> LinkTagToListing(string listingId, string tag)
+        /// <summary>
+        /// Deletes a tag entirely including tagged files and the tag itself.
+        /// </summary>
+        /// <param name="tag">Text of tag to remove.</param>
+        /// <returns>Bool indicating success/failure.</returns>
+        public async Task<bool> DeleteTag(string tag)
         {
-            var listingIdInDatabase = ListingInDatabase(listingId);
+            var existsCheck = _db.Tags.FirstOrDefault(x => x.TagTitle.ToUpper() == tag.ToUpper());
 
-            if (listingIdInDatabase.present == true)
+            if (existsCheck == null)
+            {
+                return false;
+            }
+            else
+            {
+                var result = await DisassociateTagFromEverything(existsCheck.Id);
+
+                if (result == true)
+                {
+                    _db.Tags.Remove(existsCheck);
+                    var count = await _db.SaveChangesAsync();
+                    return count == 1 ? true : false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Disassociates a tag from files but doesn't delete the tag itself.
+        /// </summary>
+        /// <param name="tagId">Id of tag to have associations removed from.</param>
+        /// <returns>Bool indicating a likely success if at least one association deleted.</returns>
+        public async Task<bool> DisassociateTagFromEverything(Guid tagId)
+        {
+            var appliedTags = _db.AppliedTags.Where(x => x.TagRefId.Id == tagId);
+            foreach (var x in appliedTags)
+            {
+                _db.AppliedTags.Remove(x);
+            }
+
+            var count = await _db.SaveChangesAsync();
+            return count >= 1 ? true : false;
+        }
+
+        /// <summary>
+        /// Links a tag to a database, creating tag if needed.
+        /// </summary>
+        /// <param name="fileId">Id of file to apply tag to.</param>
+        /// <param name="tag">Tag to apply to file.</param>
+        /// <returns>Bool indicating success/failure.</returns>
+        public async Task<bool> LinkTagToListing(string fileId, string tag)
+        {
+            var fileIdInDatabase = ListingInDatabase(fileId);
+
+            if (fileIdInDatabase.present == true)
             {
                 var tagResult = await CreateTag(tag);
 
                 if (tagResult.success == true)
                 {
-                    _db.ListingTags.Add(new ListingTag { Id = Guid.NewGuid(), ListingRefId = listingIdInDatabase.listing, TagRefId = tagResult.tagInDatabase});
+                    _db.AppliedTags.Add(new AppliedTag { Id = Guid.NewGuid(), FileRefId = fileIdInDatabase.file, TagRefId = tagResult.tagInDatabase});
                     var count = await _db.SaveChangesAsync();
                     return count < 1 ? false : true;
                 }
