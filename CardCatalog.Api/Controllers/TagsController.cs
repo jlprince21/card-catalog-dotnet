@@ -55,5 +55,7 @@ namespace CardCatalog.Api.Controllers
             return Ok("Tag delete result: " + result);
         }
 
+        // TODO 2020-05-17 Applying tags will need to consider both nullable foreign key
+        // columns. Be sure to have enough data in model to know which to apply to!
     }
 }
