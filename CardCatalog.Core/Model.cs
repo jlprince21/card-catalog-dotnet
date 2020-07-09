@@ -35,7 +35,7 @@ namespace CardCatalog.Core
         //     => options.UseSqlite(_connection);
 
         // eg: "Data Source=/path/to/card_catalog_core.db";
-        private readonly string  _connection = Environment.GetEnvironmentVariable("CARD_CATALOG_SQLITE_PATH");
+        private readonly string _connection = Environment.GetEnvironmentVariable("CARD_CATALOG_SQLITE_PATH");
 
         public CardCatalogContext() {}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
