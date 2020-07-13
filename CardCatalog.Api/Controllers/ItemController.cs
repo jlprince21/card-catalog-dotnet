@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CardCatalog.Api.Helpers;
 using CardCatalog.Api.Models;
 using CardCatalog.Core;
+using CardCatalog.Core.ApiModels;
 
 namespace CardCatalog.Api.Controllers
 {
@@ -27,7 +28,7 @@ namespace CardCatalog.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("create")]
-        public async Task<IActionResult> CreateItem([FromBody]ApiNewItem body)
+        public async Task<IActionResult> CreateItem([FromBody] ApiNewItem body)
         {
             if (body == null || body.Description == null || body.Description == string.Empty)
             {
@@ -42,7 +43,7 @@ namespace CardCatalog.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("delete")]
-        public async Task<IActionResult> DeleteItem([FromBody]ApiDeleteItem body)
+        public async Task<IActionResult> DeleteItem([FromBody] ApiDeleteItem body)
         {
             if (body == null || body.Id == null)
             {
@@ -70,6 +71,17 @@ namespace CardCatalog.Api.Controllers
         {
             var y = new ItemProcessing(_db);
             var result = await y.GetItem(id);
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("edit")]
+        public async Task<IActionResult> EditItem([FromBody] ApiEditItem item)
+        {
+            Console.WriteLine(item.Description);
+
+            var y = new ItemProcessing(_db);
+            var result = await y.EditItem(item);
             return Ok(result);
         }
     }

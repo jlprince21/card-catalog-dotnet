@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using CardCatalog.Core.ApiModels;
 
 namespace CardCatalog.Core
 {
@@ -48,7 +49,8 @@ namespace CardCatalog.Core
 
             if (containerIdInDatabase.present == true)
             {
-                _db.Items.Add(new Item {
+                _db.Items.Add(new Item
+                {
                     Id = Guid.NewGuid(),
                     ContainerRefId = containerIdInDatabase.container,
                     Description = itemDescription
@@ -103,6 +105,22 @@ namespace CardCatalog.Core
             return _db.Items
                         .Include(item => item.ContainerRefId)
                         .Where(item => item.Id == Guid.Parse(id)).FirstOrDefault();
+        }
+
+        public async Task<bool> EditItem(ApiEditItem item)
+        {
+            var entity = _db.Items.FirstOrDefault(x => x.Id == Guid.Parse(item.ItemId));
+
+            if (entity != null)
+            {
+                entity.Description = item.Description;
+                var count = await _db.SaveChangesAsync();
+                return count == 1 ? true : false;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
