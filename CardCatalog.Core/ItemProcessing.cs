@@ -80,6 +80,7 @@ namespace CardCatalog.Core
 
         public async Task<bool> DeleteItem(Item item)
         {
+            // TODO when tag support for items is implemented will need to untag here
             _db.Items.Remove(item);
             var count = await _db.SaveChangesAsync();
             return count < 1 ? false : true;

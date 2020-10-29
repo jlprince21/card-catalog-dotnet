@@ -11,6 +11,8 @@ using CardCatalog.Api.Models;
 using CardCatalog.Core;
 using CardCatalog.Core.ApiModels;
 
+using Newtonsoft.Json;
+
 namespace CardCatalog.Api.Controllers
 {
     [ApiController]
@@ -38,22 +40,22 @@ namespace CardCatalog.Api.Controllers
             var y = new ItemProcessing(_db);
             var result = await y.CreateItem(body.ContainerId, body.Description);
 
-            return Ok("Item create result: " + result); // TODO 2020-05-28 return GUID of item in tuple?
+            return Ok(JsonConvert.SerializeObject(new ApiResponseBase { Message = "Item creation result", Success = result}));
         }
 
         [AllowAnonymous]
         [HttpPost("delete")]
         public async Task<IActionResult> DeleteItem([FromBody] ApiDeleteItem body)
         {
-            if (body == null || body.Id == null)
+            if (body == null || body.ItemId == null)
             {
                 return BadRequest("Item id null or empty");
             }
 
             var y = new ItemProcessing(_db);
-            var result = await y.DeleteItemById(body.Id);
+            var result = await y.DeleteItemById(body.ItemId);
 
-            return Ok("Item delete result: " + result);
+            return Ok(JsonConvert.SerializeObject(new ApiResponseBase { Message = "Item deletion result", Success = result}));
         }
 
         [AllowAnonymous]
@@ -78,8 +80,6 @@ namespace CardCatalog.Api.Controllers
         [HttpPost("edit")]
         public async Task<IActionResult> EditItem([FromBody] ApiEditItem item)
         {
-            Console.WriteLine(item.Description);
-
             var y = new ItemProcessing(_db);
             var result = await y.EditItem(item);
             return Ok(result);

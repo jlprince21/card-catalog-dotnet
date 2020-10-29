@@ -18,6 +18,12 @@ namespace CardCatalog.Api.Models
 
     public class ApiDeleteItem
     {
-        public string Id { get; set; }
+        public string ItemId { get; set; }
+    }
+
+    public class ApiResponseBase
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
     }
 }
