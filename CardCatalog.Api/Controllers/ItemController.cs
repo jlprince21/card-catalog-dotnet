@@ -40,7 +40,8 @@ namespace CardCatalog.Api.Controllers
             var y = new ItemProcessing(_db);
             var result = await y.CreateItem(body.ContainerId, body.Description);
 
-            return Ok(JsonConvert.SerializeObject(new ApiResponseBase { Message = "Item creation result", Success = result}));
+            var response = new Response<string>(){Message = "Item creation result", Success = result};
+            return Ok(JsonConvert.SerializeObject(response));
         }
 
         [AllowAnonymous]
@@ -55,9 +56,7 @@ namespace CardCatalog.Api.Controllers
             var y = new ItemProcessing(_db);
             var result = await y.DeleteItemById(body.ItemId);
 
-            var response = new Response<string>();
-            response.Success = result;
-            response.Message = "Item deletion result";
+            var response = new Response<string>(){Message = "Item deletion result", Success = result};
             return Ok(JsonConvert.SerializeObject(response));
         }
 
