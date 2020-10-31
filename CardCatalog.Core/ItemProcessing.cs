@@ -100,12 +100,27 @@ namespace CardCatalog.Core
             return results;
         }
 
-        public async Task<Item> GetItem(string id)
+        public async Task<SingleItem> GetItem(string id)
         {
             // TODO this should probably check if item in DB and set a bool or something nicer lol
-            return _db.Items
-                        .Include(item => item.ContainerRefId)
-                        .Where(item => item.Id == Guid.Parse(id)).FirstOrDefault();
+            var res = (from i in _db.Items
+                       join c in _db.Containers
+                       on i.ContainerRefId.Id equals c.Id
+                       where i.Id == new Guid(id)
+                       select new
+                       {
+                           Id = i.Id,
+                           ContainerId = c.Id,
+                           Description = i.Description
+                       }
+                      ).FirstOrDefault();
+
+            var singleItem = new SingleItem();
+            singleItem.ContainerId = res.ContainerId;
+            singleItem.Description = res.Description;
+            singleItem.ItemId = res.Id;
+
+            return singleItem;
         }
 
         public async Task<bool> EditItem(ApiEditItem item)
