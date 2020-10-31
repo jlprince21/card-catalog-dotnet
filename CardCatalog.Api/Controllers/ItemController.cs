@@ -55,7 +55,10 @@ namespace CardCatalog.Api.Controllers
             var y = new ItemProcessing(_db);
             var result = await y.DeleteItemById(body.ItemId);
 
-            return Ok(JsonConvert.SerializeObject(new ApiResponseBase { Message = "Item deletion result", Success = result}));
+            var response = new Response<string>();
+            response.Success = result;
+            response.Message = "Item deletion result";
+            return Ok(JsonConvert.SerializeObject(response));
         }
 
         [AllowAnonymous]
