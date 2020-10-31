@@ -62,8 +62,10 @@ namespace CardCatalog.Api.Controllers
         [HttpGet("get")]
         public async Task<IActionResult> Get()
         {
+            var result = new PagedResponse<Item>(items: new List<Item>());
             var y = new ItemProcessing(_db);
-            var result = await y.GetItems();
+            result.Items = await y.GetItems();
+            result.TotalRecords = result.Items.Any() ? result.Items.Count : 0;
             return Ok(result);
         }
 
