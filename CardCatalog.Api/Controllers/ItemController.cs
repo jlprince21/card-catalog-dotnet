@@ -75,9 +75,11 @@ namespace CardCatalog.Api.Controllers
         [HttpGet("get-single")]
         public async Task<IActionResult> Get(string id)
         {
+            var result = new PagedResponse<Item>(items: new List<Item>());
             var y = new ItemProcessing(_db);
-            var result = await y.GetItem(id);
-            return Ok(result);
+            var someItem = await y.GetItem(id);
+            result.Items.Add(someItem);
+            return Ok(JsonConvert.SerializeObject(result));
         }
 
         [AllowAnonymous]
