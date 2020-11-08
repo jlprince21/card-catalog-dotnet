@@ -72,7 +72,7 @@ namespace CardCatalog.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("get-single")]
+        [HttpPost("get-single")]
         public async Task<IActionResult> Get([FromBody] ApiItemId item)
         {
             var result = new PagedResponse<SingleItem>(items: new List<SingleItem>());
