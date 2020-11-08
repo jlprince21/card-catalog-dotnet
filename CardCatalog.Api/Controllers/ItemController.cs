@@ -64,7 +64,7 @@ namespace CardCatalog.Api.Controllers
         [HttpGet("get")]
         public async Task<IActionResult> Get()
         {
-            var result = new PagedResponse<Item>(items: new List<Item>());
+            var result = new PagedResponse<SingleItem>(items: new List<SingleItem>());
             var y = new ItemProcessing(_db);
             result.Items = await y.GetItems();
             result.TotalRecords = result.Items.Any() ? result.Items.Count : 0;
@@ -73,13 +73,13 @@ namespace CardCatalog.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet("get-single")]
-        public async Task<IActionResult> Get(string id)
+        public async Task<IActionResult> Get([FromBody] ApiItemId item)
         {
             var result = new PagedResponse<SingleItem>(items: new List<SingleItem>());
             var y = new ItemProcessing(_db);
-            var someItem = await y.GetItem(id);
+            var someItem = await y.GetItem(item.itemId);
             result.Items.Add(someItem);
-            return Ok(JsonConvert.SerializeObject(result));
+            return Ok(result);
         }
 
         [AllowAnonymous]

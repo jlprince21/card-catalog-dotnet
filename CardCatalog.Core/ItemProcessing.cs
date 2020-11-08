@@ -91,36 +91,40 @@ namespace CardCatalog.Core
             return _db.Containers.ToList();
         }
 
-        public async Task<List<Item>> GetItems()
+        public async Task<List<SingleItem>> GetItems()
         {
-            // .Include tells EF to eagerly load foreign key data
-            var results = _db.Items
-                            .Include(item => item.ContainerRefId)
-                            .ToList();
+            List<SingleItem> results = (from i in _db.Items
+                                        join c in _db.Containers
+                                        on i.ContainerRefId.Id equals c.Id
+                                        select new SingleItem
+                                        {
+                                            itemId = i.Id,
+                                            containerId = c.Id,
+                                            itemDescription = i.Description,
+                                            containerDescription = c.Description
+                                        }
+                       ).ToList();
+
             return results;
         }
 
-        public async Task<SingleItem> GetItem(string id)
+        public async Task<SingleItem> GetItem(Guid id)
         {
             // TODO this should probably check if item in DB and set a bool or something nicer lol
             var res = (from i in _db.Items
-                       join c in _db.Containers
-                       on i.ContainerRefId.Id equals c.Id
-                       where i.Id == new Guid(id)
-                       select new
-                       {
-                           Id = i.Id,
-                           ContainerId = c.Id,
-                           Description = i.Description
-                       }
+                              join c in _db.Containers
+                              on i.ContainerRefId.Id equals c.Id
+                              where i.Id == id
+                              select new SingleItem
+                              {
+                                  itemId = i.Id,
+                                  containerId = c.Id,
+                                  itemDescription = i.Description,
+                                  containerDescription = c.Description
+                              }
                       ).FirstOrDefault();
 
-            var singleItem = new SingleItem();
-            singleItem.ContainerId = res.ContainerId;
-            singleItem.Description = res.Description;
-            singleItem.ItemId = res.Id;
-
-            return singleItem;
+            return res;
         }
 
         public async Task<bool> EditItem(ApiEditItem item)

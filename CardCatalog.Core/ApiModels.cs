@@ -11,8 +11,14 @@ namespace CardCatalog.Core.ApiModels
 
     public class SingleItem
     {
-        public Guid ItemId { get; set; }
-        public Guid ContainerId { get; set; }
-        public string Description { get; set; }
+        public Guid itemId { get; set; }
+        public Guid containerId { get; set; }
+        public string itemDescription { get; set; }
+        public string containerDescription { get; set; }
+    }
+
+    public class ApiItemId
+    {
+        public Guid itemId { get; set; }
     }
 }
