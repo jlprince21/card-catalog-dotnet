@@ -32,13 +32,13 @@ namespace CardCatalog.Api.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateItem([FromBody] ApiNewItem body)
         {
-            if (body == null || body.Description == null || body.Description == string.Empty)
+            if (body == null || body.itemDescription == null || body.itemDescription == string.Empty)
             {
                 return BadRequest("Item description null or empty");
             }
 
             var y = new ItemProcessing(_db);
-            var result = await y.CreateItem(body.ContainerId, body.Description);
+            var result = await y.CreateItem(body.containerId, body.itemDescription);
 
             var response = new Response<string>(){Message = "Item creation result", Success = result};
             return Ok(JsonConvert.SerializeObject(response));

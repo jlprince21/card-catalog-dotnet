@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CardCatalog.Api.Helpers;
 using CardCatalog.Api.Models;
 using CardCatalog.Core;
+using CardCatalog.Core.ApiModels;
 
 namespace CardCatalog.Api.Controllers
 {
@@ -44,8 +45,10 @@ namespace CardCatalog.Api.Controllers
         [HttpGet("get")]
         public async Task<IActionResult> Get()
         {
+            var result = new PagedResponse<SingleContainer>(items: new List<SingleContainer>());
             var y = new ItemProcessing(_db);
-            var result = await y.GetContainers();
+            result.Items = await y.GetContainers();
+            result.TotalRecords = result.Items.Any() ? result.Items.Count : 0;
             return Ok(result);
         }
 

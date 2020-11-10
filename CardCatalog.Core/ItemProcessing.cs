@@ -86,9 +86,17 @@ namespace CardCatalog.Core
             return count < 1 ? false : true;
         }
 
-        public async Task<List<Container>> GetContainers()
+        public async Task<List<SingleContainer>> GetContainers()
         {
-            return _db.Containers.ToList();
+            List<SingleContainer> results = (from i in _db.Containers
+                                             select new SingleContainer
+                                             {
+                                                 id = i.Id,
+                                                 description = i.Description,
+                                             }
+                       ).ToList();
+
+            return results;
         }
 
         public async Task<List<SingleItem>> GetItems()
@@ -112,16 +120,16 @@ namespace CardCatalog.Core
         {
             // TODO this should probably check if item in DB and set a bool or something nicer lol
             var res = (from i in _db.Items
-                              join c in _db.Containers
-                              on i.ContainerRefId.Id equals c.Id
-                              where i.Id == id
-                              select new SingleItem
-                              {
-                                  itemId = i.Id,
-                                  containerId = c.Id,
-                                  itemDescription = i.Description,
-                                  containerDescription = c.Description
-                              }
+                       join c in _db.Containers
+                       on i.ContainerRefId.Id equals c.Id
+                       where i.Id == id
+                       select new SingleItem
+                       {
+                           itemId = i.Id,
+                           containerId = c.Id,
+                           itemDescription = i.Description,
+                           containerDescription = c.Description
+                       }
                       ).FirstOrDefault();
 
             return res;
@@ -129,11 +137,11 @@ namespace CardCatalog.Core
 
         public async Task<bool> EditItem(ApiEditItem item)
         {
-            var entity = _db.Items.FirstOrDefault(x => x.Id == Guid.Parse(item.ItemId));
+            var entity = _db.Items.FirstOrDefault(x => x.Id == Guid.Parse(item.itemId));
 
             if (entity != null)
             {
-                entity.Description = item.Description;
+                entity.Description = item.description;
                 var count = await _db.SaveChangesAsync();
                 return count == 1 ? true : false;
             }

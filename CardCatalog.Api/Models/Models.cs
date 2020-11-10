@@ -12,8 +12,8 @@ namespace CardCatalog.Api.Models
 
     public class ApiNewItem
     {
-        public string ContainerId { get; set; }
-        public string Description { get; set; }
+        public string containerId { get; set; }
+        public string itemDescription { get; set; }
     }
 
     public class ApiDeleteItem

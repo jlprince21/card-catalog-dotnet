@@ -4,9 +4,9 @@ namespace CardCatalog.Core.ApiModels
 {
     public class ApiEditItem
     {
-        public string ContainerId { get; set; }
-        public string Description { get; set; }
-        public string ItemId { get; set; }
+        public string containerId { get; set; }
+        public string description { get; set; }
+        public string itemId { get; set; }
     }
 
     public class SingleItem
@@ -15,6 +15,12 @@ namespace CardCatalog.Core.ApiModels
         public Guid containerId { get; set; }
         public string itemDescription { get; set; }
         public string containerDescription { get; set; }
+    }
+
+    public class SingleContainer
+    {
+        public Guid id { get; set; }
+        public string description { get; set; }
     }
 
     public class ApiItemId
