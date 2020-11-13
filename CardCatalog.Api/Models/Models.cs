@@ -18,6 +18,6 @@ namespace CardCatalog.Api.Models
 
     public class ApiDeleteItem
     {
-        public string ItemId { get; set; }
+        public string itemId { get; set; }
     }
 }

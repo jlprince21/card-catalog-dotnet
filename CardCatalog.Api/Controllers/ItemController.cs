@@ -48,13 +48,13 @@ namespace CardCatalog.Api.Controllers
         [HttpPost("delete")]
         public async Task<IActionResult> DeleteItem([FromBody] ApiDeleteItem body)
         {
-            if (body == null || body.ItemId == null)
+            if (body == null || body.itemId == null)
             {
                 return BadRequest("Item id null or empty");
             }
 
             var y = new ItemProcessing(_db);
-            var result = await y.DeleteItemById(body.ItemId);
+            var result = await y.DeleteItemById(body.itemId);
 
             var response = new Response<string>(){Message = "Item deletion result", Success = result};
             return Ok(JsonConvert.SerializeObject(response));
