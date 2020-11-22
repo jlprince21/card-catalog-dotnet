@@ -150,5 +150,22 @@ namespace CardCatalog.Core
                 return false;
             }
         }
+
+        public async Task<bool> MoveItem(ApiMoveItem item)
+        {
+            var entity = _db.Items.FirstOrDefault(x => x.Id == Guid.Parse(item.itemId));
+            var containerEntity = _db.Containers.FirstOrDefault(x => x.Id == Guid.Parse(item.containerId));
+
+            if (entity != null)
+            {
+                entity.ContainerRefId = containerEntity;
+                var count = await _db.SaveChangesAsync();
+                return count == 1 ? true : false;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

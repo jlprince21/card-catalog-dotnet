@@ -90,5 +90,15 @@ namespace CardCatalog.Api.Controllers
             var result = await y.EditItem(item);
             return Ok(result);
         }
+
+        [AllowAnonymous]
+        [HttpPost("move")]
+        public async Task<IActionResult> MoveItem([FromBody] ApiMoveItem item)
+        {
+            var result = new Response<bool>();
+            var y = new ItemProcessing(_db);
+            result.Success = await y.MoveItem(item);
+            return Ok(result);
+        }
     }
 }
