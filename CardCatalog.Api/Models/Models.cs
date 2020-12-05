@@ -7,7 +7,7 @@ namespace CardCatalog.Api.Models
 
     public class ApiNewContainer
     {
-        public string Description { get; set; }
+        public string containerDescription { get; set; }
     }
 
     public class ApiNewItem

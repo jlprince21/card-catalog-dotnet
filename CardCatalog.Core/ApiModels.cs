@@ -9,6 +9,12 @@ namespace CardCatalog.Core.ApiModels
         public string itemId { get; set; }
     }
 
+     public class ApiEditContainer
+    {
+        public string containerId { get; set; }
+        public string description { get; set; }
+    }
+
     public class ApiMoveItem
     {
         public string itemId { get; set; }

@@ -151,6 +151,22 @@ namespace CardCatalog.Core
             }
         }
 
+        public async Task<bool> EditContainer(ApiEditContainer container)
+        {
+            var entity = _db.Containers.FirstOrDefault(x => x.Id == Guid.Parse(container.containerId));
+
+            if (entity != null)
+            {
+                entity.Description = container.description;
+                var count = await _db.SaveChangesAsync();
+                return count == 1 ? true : false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public async Task<bool> MoveItem(ApiMoveItem item)
         {
             var entity = _db.Items.FirstOrDefault(x => x.Id == Guid.Parse(item.itemId));

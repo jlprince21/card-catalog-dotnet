@@ -11,6 +11,8 @@ using CardCatalog.Api.Models;
 using CardCatalog.Core;
 using CardCatalog.Core.ApiModels;
 
+using Newtonsoft.Json;
+
 namespace CardCatalog.Api.Controllers
 {
     [ApiController]
@@ -30,15 +32,17 @@ namespace CardCatalog.Api.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateContainer([FromBody]ApiNewContainer body)
         {
-            if (body == null || body.Description == null || body.Description == string.Empty)
+            if (body == null || body.containerDescription == null || body.containerDescription == string.Empty)
             {
                 return BadRequest("Container description null or empty");
             }
 
             var y = new ItemProcessing(_db);
-            var result = await y.CreateContainer(body.Description);
+            var result = await y.CreateContainer(body.containerDescription);
 
-            return Ok("Container create result: " + result); // TODO 2020-05-28 return GUID of container in tuple?
+            // TODO 2020-05-28 return GUID of container in tuple?
+            var response = new Response<string>(){Message = "Container creation result", Success = result};
+            return Ok(JsonConvert.SerializeObject(response));
         }
 
         [AllowAnonymous]
@@ -49,6 +53,15 @@ namespace CardCatalog.Api.Controllers
             var y = new ItemProcessing(_db);
             result.Items = await y.GetContainers();
             result.TotalRecords = result.Items.Any() ? result.Items.Count : 0;
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("edit")]
+        public async Task<IActionResult> EditContainer([FromBody] ApiEditContainer item)
+        {
+            var y = new ItemProcessing(_db);
+            var result = await y.EditContainer(item);
             return Ok(result);
         }
 
