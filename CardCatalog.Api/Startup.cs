@@ -38,8 +38,10 @@ namespace CardCatalog.Api
             // TODO 19-07-25 put this in the ConnectionStrings section someday if moving away from environment variables
             // this IOC part took some time to get right
             // https://stackoverflow.com/a/50788386
-            services.AddDbContextPool<CardCatalogContext>(options =>
-                    options.UseSqlite(Environment.GetEnvironmentVariable(appSettings.SqlitePath)));
+            services.AddDbContext<CardCatalogContext>((serviceProvider, optionsBuilder) =>
+            {
+                optionsBuilder.UseSqlite(Environment.GetEnvironmentVariable(appSettings.SqlitePath));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
