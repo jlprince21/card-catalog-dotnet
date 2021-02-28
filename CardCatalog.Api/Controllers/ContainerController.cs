@@ -41,7 +41,7 @@ namespace CardCatalog.Api.Controllers
             var result = await y.CreateContainer(body.containerDescription);
 
             // TODO 2020-05-28 return GUID of container in tuple?
-            var response = new Response<string>(){Message = "Container creation result", Success = result};
+            var response = new Response<string>(){Message = "Container creation result", Success = result.success};
             return Ok(JsonConvert.SerializeObject(response));
         }
 

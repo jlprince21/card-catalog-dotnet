@@ -19,14 +19,40 @@ namespace CardCatalog.Core
             _db = context;
         }
 
-        public async Task<bool> CreateContainer(string description)
+        public async Task<InsertSuccessAndId> CreateContainer(string description)
         {
-            _db.Containers.Add(new Container
+            var newContainer = new Container
             {
                 Id = Guid.NewGuid(),
                 Description = description
-            });
+            };
 
+            _db.Containers.Add(newContainer);
+            var count = await _db.SaveChangesAsync();
+
+            var res = new InsertSuccessAndId{id = newContainer.Id, success = count < 1 ? false : true};
+
+            return res;
+        }
+
+        public async Task<bool> DeleteContainer(string containerId)
+        {
+            var containerIdInDatabase = ContainerInDatabase(containerId);
+
+            if (containerIdInDatabase.present == true)
+            {
+                return await DeleteContainer(containerIdInDatabase.container);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteContainer(Container container)
+        {
+            // TODO 2020-12-06 will need to mark items as outside container here in future
+            _db.Containers.Remove(container);
             var count = await _db.SaveChangesAsync();
             return count < 1 ? false : true;
         }
