@@ -66,3 +66,22 @@ dotnet run --hash <ROOT_DIRECTORY>
 ``` bash
 dotnet run --orphans
 ```
+
+## Docker Reference
+
+As of writing, if using Docker Compose to build the web API, the code will need
+a change to not look at environment variables for SQLite path.
+
+Change the UseSqlite calls to something like this for the path:
+
+`"Data Source=/database/card_catalog_core.db"`
+
+Note the Docker setup is assuming a SQLite DB has already been created and
+dropped into volume specified in the `docker-compose.yml`
+
+Next, start the project up. Remove `-d` if you want to see output in the first
+run:
+
+`docker-compose up -d`
+
+The API should now be running on port 5555.
