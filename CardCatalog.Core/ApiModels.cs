@@ -2,6 +2,12 @@ using System;
 
 namespace CardCatalog.Core.ApiModels
 {
+    public class InsertSuccessAndId
+    {
+        public Guid id { get; set; }
+        public bool success { get; set; }
+    }
+
     public class ApiEditItem
     {
         public string containerId { get; set; }
