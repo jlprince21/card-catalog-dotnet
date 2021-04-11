@@ -11,41 +11,48 @@ For files some things gathered include:
 3. Size
 4. XxHash checksum
 
-In addition to collecting data about files, the program assists in indexing
-files with tools such as file tagging, search, and more.
+In addition to collecting file metadata, the program assists in indexing files
+with tools such as file tagging, search, and more.
 
-On the physical inventory side, Card Catalog allows you to manage a collection
-of containers and the items they hold. You can move items around, change
-container and item descriptions, and remove containers/items from the database.
+On the physical inventory side, Card Catalog helps manage a collection of
+containers and the items they hold. You can move items around, change container
+and item descriptions, and remove containers/items from the database.
 
-Development of a companion app is underway to support use of this system. A link
-to it will go here someday TODO.
+Librarian is the companion UI for Card Catalog's API. You can grab it
+[here](https://github.com/jlprince21/librarian-flutter).
 
 # Getting Started
 
-This application requies .NET Core 5 and dotnet-ef CLI tools which will need to
-be installed separately as of writing.
+This application requies .NET Core 5, dotnet-ef CLI tools, and a PostgreSQL
+database.
 
 ## Environment Variables
 
-CARD_CATALOG_SQLITE_PATH - required, sets the path to the SQLite database that
-will be used. Example entry in ~/.zshrc on macOS is
+CARD_CATALOG_DB_CONNECTION - required, sets the connection string to the
+PostgreSQL database that will be used. Example entry in ~/.zshrc on macOS is
 
-`export CARD_CATALOG_SQLITE_PATH="Data Source=/Users/jdoe/card_catalog_core.db"`
+`export CARD_CATALOG_DB_CONNECTION="Host=<IP_ADDRESS>;Port=5432;Database=<DATABASE_NAME>;Username=<USERNAME>;Password=<PASSWORD>"`
 
 ## Running the Projects
 
-First, inside the CardCatalog.Core directory create the database and run
-migrations:
+Setup a PostgreSQL database with an empty database that the API will use. Before
+running migrations, run this query in the database you want Card Catalog to use
+to enable an extension needed for UUID support.
+
+``` SQL
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
+
+Next, inside the CardCatalog.Api directory run the migrations:
 
 ``` bash
 dotnet restore
-dotnet-ef database update # remember to install dotnet-ef!
+dotnet-ef database update --verbose # remember to install dotnet-ef!
 ```
 
 Now you can choose to run the web API or terminal programs.
 
-To use the web api, go to the CardCatalog.Api directory and:
+To use the web API, go to the CardCatalog.Api directory and:
 
 ``` bash
 dotnet restore
@@ -69,19 +76,32 @@ dotnet run --orphans
 
 ## Docker Reference
 
-As of writing, if using Docker Compose to build the web API, the code will need
-a change to not look at environment variables for SQLite path.
+Using the Docker Compose file provided with this project currently doesn't run
+the migrations. To get started:
 
-Change the UseSqlite calls to something like this for the path:
+1. Review and set the environment variables to your desired values.
+2. Run this command to start a new database, pgAdmin, and the API.
 
-`"Data Source=/database/card_catalog_core.db"`
+``` bash
+docker-compose up -d # Remove `-d` if you want to see output
+```
 
-Note the Docker setup is assuming a SQLite DB has already been created and
-dropped into volume specified in the `docker-compose.yml`
+3. Login to pgAdmin. Create a new server registration and database. Run the UUID
+   extension enabling query. You will need to get the IP address of the database
+   container when creating the server in pgAdmin, use:
 
-Next, start the project up. Remove `-d` if you want to see output in the first
-run:
+``` bash
+docker ps
+docker inspect <POSTGRESQL_CONTAINER_ID> | grep IPAddress
+```
 
-`docker-compose up -d`
+4. Run the migrations manually using the local copy of the project. On macOS
+   the connection string will use 127.0.0.1 to connect to the database.
 
-The API should now be running on port 5555.
+The API should now be running on port 5555. Test it with your favorite HTTP
+client or try pointing Librarian at the API and giving it a try!
+
+## Credits
+
+`docker-compose.yml` adapted from [rafaeladolfo/DockerComposeProductApi](https://github.com/rafaeladolfo/DockerComposeProductApi)
+and [Mahbub Zaman](https://towardsdatascience.com/how-to-run-postgresql-and-pgadmin-using-docker-3a6a8ae918b5)

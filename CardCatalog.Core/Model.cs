@@ -19,28 +19,12 @@ namespace CardCatalog.Core
         public DbSet<AppliedTag> AppliedTags { get; set; }
         public DbSet<Tag> Tags { get; set; }
 
-        // NOTE 2020-05-02 This constructor and OnConfiguring were used when the
-        // CLI project was main way of interacting with the Core project. If troubles
-        // arise using migrations or when attaching another project to the solution
-        // may need these back in here.
-        // public CardCatalogContext()
-        // {
-        //      // NOTE 2020-04-23 this may come in handy for verifying the database
-        //      // is created at startup in other projects but it will cause issues
-        //      // when trying to run migrations inside this project. Keeping just in case
-        //      // Database.EnsureCreated();
-        // }
-
-        // protected override void OnConfiguring(DbContextOptionsBuilder options)
-        //     => options.UseSqlite(_connection);
-
-        // eg: "Data Source=/path/to/card_catalog_core.db";
-        private readonly string _connection = Environment.GetEnvironmentVariable("CARD_CATALOG_SQLITE_PATH");
+        private readonly string _connection = Environment.GetEnvironmentVariable("CARD_CATALOG_DB_CONNECTION");
 
         public CardCatalogContext() {}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite(_connection);
+            optionsBuilder.UseNpgsql(_connection);
         }
 
         public CardCatalogContext(DbContextOptions<CardCatalogContext> options) : base(options)
@@ -49,11 +33,13 @@ namespace CardCatalog.Core
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<File>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
-            modelBuilder.Entity<Tag>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
-            modelBuilder.Entity<AppliedTag>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
-            modelBuilder.Entity<Item>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
-            modelBuilder.Entity<Container>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+            modelBuilder.HasPostgresExtension("uuid-ossp"); // remember to enable extension in database before running initial migrations
+
+            modelBuilder.Entity<File>().Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()");
+            modelBuilder.Entity<Tag>().Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()");
+            modelBuilder.Entity<AppliedTag>().Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()");
+            modelBuilder.Entity<Item>().Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()");
+            modelBuilder.Entity<Container>().Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()");
 
             // this is needed to set a unique constraint on TagTitle column in Tags table
             modelBuilder.Entity<Tag>()

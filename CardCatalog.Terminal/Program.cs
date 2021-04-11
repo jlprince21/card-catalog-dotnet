@@ -20,7 +20,7 @@ namespace CardCatalog.Terminal
         public static async Task Main(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<CardCatalogContext>();
-            optionsBuilder.UseSqlite(Environment.GetEnvironmentVariable("CARD_CATALOG_SQLITE_PATH"));
+            optionsBuilder.UseNpgsql(Environment.GetEnvironmentVariable("CARD_CATALOG_DB_CONNECTION"));
             CardCatalogContext dbContext = new CardCatalogContext(optionsBuilder.Options);
             var y = new FileProcessing(dbContext);
 

@@ -40,7 +40,7 @@ namespace CardCatalog.Api
             // https://stackoverflow.com/a/50788386
             services.AddDbContext<CardCatalogContext>((serviceProvider, optionsBuilder) =>
             {
-                optionsBuilder.UseSqlite(Environment.GetEnvironmentVariable(appSettings.SqlitePath));
+                optionsBuilder.UseNpgsql(Environment.GetEnvironmentVariable(appSettings.DbConnection));
             });
         }
 

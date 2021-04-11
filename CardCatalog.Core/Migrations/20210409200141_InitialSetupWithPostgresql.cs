@@ -3,16 +3,19 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CardCatalog.Core.Migrations
 {
-    public partial class InitialSetup : Migration
+    public partial class InitialSetupWithPostgresql : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:uuid-ossp", ",,");
+
             migrationBuilder.CreateTable(
                 name: "Containers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "NEWID()"),
-                    Description = table.Column<string>(nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
+                    Description = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -23,12 +26,12 @@ namespace CardCatalog.Core.Migrations
                 name: "Files",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "NEWID()"),
-                    Checksum = table.Column<string>(nullable: true),
-                    FoundOn = table.Column<DateTime>(nullable: false),
-                    FileName = table.Column<string>(nullable: false),
-                    FilePath = table.Column<string>(nullable: false),
-                    FileSize = table.Column<long>(nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
+                    Checksum = table.Column<string>(type: "text", nullable: true),
+                    FoundOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    FileName = table.Column<string>(type: "text", nullable: false),
+                    FilePath = table.Column<string>(type: "text", nullable: false),
+                    FileSize = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -39,8 +42,8 @@ namespace CardCatalog.Core.Migrations
                 name: "Tags",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "NEWID()"),
-                    TagTitle = table.Column<string>(nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
+                    TagTitle = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -52,9 +55,9 @@ namespace CardCatalog.Core.Migrations
                 name: "Items",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "NEWID()"),
-                    Container = table.Column<Guid>(nullable: false),
-                    Description = table.Column<string>(nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
+                    Container = table.Column<Guid>(type: "uuid", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,10 +74,10 @@ namespace CardCatalog.Core.Migrations
                 name: "AppliedTags",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "NEWID()"),
-                    File = table.Column<Guid>(nullable: true),
-                    Item = table.Column<Guid>(nullable: true),
-                    Tag = table.Column<Guid>(nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
+                    File = table.Column<Guid>(type: "uuid", nullable: true),
+                    Item = table.Column<Guid>(type: "uuid", nullable: true),
+                    Tag = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
