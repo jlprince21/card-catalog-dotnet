@@ -2,6 +2,6 @@ namespace CardCatalog.Api.Helpers
 {
     public class AppSettings
     {
-        public string SqlitePath { get; set; }
+        public string DbConnection { get; set; }
     }
 }

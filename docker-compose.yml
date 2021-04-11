@@ -1,8 +1,37 @@
 version: '3.8'
 
+# Replace all instances of <FILL_ME_IN> with your own values
+# Note the CARD_CATALOG_DB_CONNECTION referring to the PostgreSQL container, db
+# for the Host value; this is Docker-specific name resolution.
+
 services:
+  db:
+    container_name: pg_container
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: <FILL_ME_IN>
+      POSTGRES_PASSWORD: <FILL_ME_IN>
+    ports:
+      - "5432:5432"
+    networks:
+      - ccapi-network
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: <FILL_ME_IN>
+      PGADMIN_DEFAULT_PASSWORD: <FILL_ME_IN>
+    ports:
+      - "5050:80"
+    networks:
+      - ccapi-network
+
   cardcatalogapi:
     image: cardcatalogapi
+    environment:
+      CARD_CATALOG_DB_CONNECTION: "Host=db;Port=5432;Database=<FILL_ME_IN>;Username=<FILL_ME_IN>;Password=<FILL_ME_IN>"
     build:
       context: .
       dockerfile: Dockerfile
@@ -10,8 +39,6 @@ services:
       - "5555:80"
     networks:
       - ccapi-network
-    volumes:
-      - /local/path/to/database/folder:/database
 
 networks:
     ccapi-network:
