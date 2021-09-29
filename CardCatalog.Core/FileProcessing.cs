@@ -54,7 +54,7 @@ namespace CardCatalog.Core
         public async Task DeleteOrphans(bool deleteFileOnOrphanFound)
         {
             long orphansFound = 0;
-            var files = _db.Files;
+            var files = _db.Files.ToList();
 
             foreach (var file in files)
             {
@@ -173,7 +173,7 @@ namespace CardCatalog.Core
                 FileSize = fileSize,
             });
 
-            var count = await _db.SaveChangesAsync();
+            var count = _db.SaveChanges(); // TODO 2021-06-07 No apparent reason why SaveChangesAsync won't work here
             return count >= 1 ? true : false;
         }
 
@@ -184,14 +184,14 @@ namespace CardCatalog.Core
         /// <returns>Bool indicating success/failure.</returns>
         public async Task<bool> DeleteListing(File file)
         {
-            var appliedTags = _db.AppliedTags.Where(x => x.FileRefId.Id == file.Id);
+            var appliedTags = _db.AppliedTags.Where(x => x.FileRefId.Id == file.Id).ToList();
             foreach (var x in appliedTags)
             {
                 _db.AppliedTags.Remove(x);
             }
 
             _db.Files.Remove(file);
-            var count = await _db.SaveChangesAsync();
+            var count = _db.SaveChanges(); // TODO 2021-06-07 No apparent reason why SaveChangesAsync won't work here
             return count >= 1 ? true : false;
         }
 
@@ -212,7 +212,7 @@ namespace CardCatalog.Core
                     TagTitle = tag
                 };
                 _db.Tags.Add(newTag);
-                var count = await _db.SaveChangesAsync();
+                var count = _db.SaveChanges(); // TODO 2021-06-07 No apparent reason why SaveChangesAsync won't work here
                 return count < 1 ? (false, null) : (true, newTag);
             }
             else
@@ -241,7 +241,7 @@ namespace CardCatalog.Core
                 if (result == true)
                 {
                     _db.Tags.Remove(existsCheck);
-                    var count = await _db.SaveChangesAsync();
+                    var count = _db.SaveChanges(); // TODO 2021-06-07 No apparent reason why SaveChangesAsync won't work here
                     return count == 1 ? true : false;
                 }
                 else
@@ -264,7 +264,7 @@ namespace CardCatalog.Core
                 _db.AppliedTags.Remove(x);
             }
 
-            var count = await _db.SaveChangesAsync();
+            var count = _db.SaveChanges(); // TODO 2021-06-07 No apparent reason why SaveChangesAsync won't work here
             return count >= 1 ? true : false;
         }
 
@@ -285,7 +285,7 @@ namespace CardCatalog.Core
                 if (tagResult.success == true)
                 {
                     _db.AppliedTags.Add(new AppliedTag { Id = Guid.NewGuid(), FileRefId = fileIdInDatabase.file, TagRefId = tagResult.tagInDatabase});
-                    var count = await _db.SaveChangesAsync();
+                    var count = _db.SaveChanges(); // TODO 2021-06-07 No apparent reason why SaveChangesAsync won't work here
                     return count < 1 ? false : true;
                 }
                 else
