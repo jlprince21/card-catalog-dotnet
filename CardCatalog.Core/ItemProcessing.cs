@@ -120,7 +120,7 @@ namespace CardCatalog.Core
                                                  id = i.Id,
                                                  description = i.Description,
                                              }
-                       ).ToList();
+                                            ).OrderBy(x => x.description).ToList();
 
             return results;
         }
