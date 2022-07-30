@@ -88,7 +88,7 @@ namespace CardCatalog.Core
             return check == null ? false : true;
         }
 
-        public (bool present, File file) ListingInDatabase(string fileId)
+        public (bool present, File? file) ListingInDatabase(string fileId)
         {
             var check = _db.Files.FirstOrDefault(x => x.Id == Guid.Parse(fileId));
             return check == null ? (false, null) : (true, check);
@@ -102,6 +102,7 @@ namespace CardCatalog.Core
             while (queue.Count > 0)
             {
                 path = queue.Dequeue();
+
                 try
                 {
                     foreach (string subDir in Directory.GetDirectories(path))
@@ -113,7 +114,9 @@ namespace CardCatalog.Core
                 {
                     Console.Error.WriteLine(ex);
                 }
-                string[] files = null;
+
+                string[] files = new string[0];
+
                 try
                 {
                     files = Directory.GetFiles(path);
@@ -122,6 +125,7 @@ namespace CardCatalog.Core
                 {
                     Console.Error.WriteLine(ex);
                 }
+
                 if (files != null)
                 {
                     for (int i = 0; i < files.Length; i++)
@@ -147,7 +151,7 @@ namespace CardCatalog.Core
                     return (true, res.AsBase64String());
                 }
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 return (false, string.Empty);
             }
@@ -200,7 +204,7 @@ namespace CardCatalog.Core
         /// </summary>
         /// <param name="tag">Text of tag to create.</param>
         /// <returns>Bool indicating success/failure.</returns>
-        public async Task<(bool success, Tag tagInDatabase)> CreateTag(string tag)
+        public async Task<(bool success, Tag? tagInDatabase)> CreateTag(string tag)
         {
             var existsCheck = _db.Tags.FirstOrDefault(x => x.TagTitle.ToUpper() == tag.ToUpper());
 
@@ -284,6 +288,7 @@ namespace CardCatalog.Core
 
                 if (tagResult.success == true)
                 {
+                    #pragma warning disable CS8601
                     _db.AppliedTags.Add(new AppliedTag { Id = Guid.NewGuid(), FileRefId = fileIdInDatabase.file, TagRefId = tagResult.tagInDatabase});
                     var count = _db.SaveChanges(); // TODO 2021-06-07 No apparent reason why SaveChangesAsync won't work here
                     return count < 1 ? false : true;
