@@ -3,25 +3,24 @@ using System;
 using CardCatalog.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-
-#nullable disable
 
 namespace CardCatalog.Core.Migrations
 {
     [DbContext(typeof(CardCatalogContext))]
-    partial class CardCatalogContextModelSnapshot : ModelSnapshot
+    [Migration("20220724133303_RemoveContainerAndItemTables")]
+    partial class RemoveContainerAndItemTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "uuid-ossp");
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+                .HasPostgresExtension("uuid-ossp")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("ProductVersion", "5.0.6")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("CardCatalog.Core.AppliedTag", b =>
                 {
@@ -30,7 +29,7 @@ namespace CardCatalog.Core.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("uuid_generate_v4()");
 
-                    b.Property<Guid>("File")
+                    b.Property<Guid?>("File")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("Tag")
@@ -53,7 +52,6 @@ namespace CardCatalog.Core.Migrations
                         .HasDefaultValueSql("uuid_generate_v4()");
 
                     b.Property<string>("Checksum")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FileName")
@@ -68,7 +66,7 @@ namespace CardCatalog.Core.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("FoundOn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -99,8 +97,7 @@ namespace CardCatalog.Core.Migrations
                     b.HasOne("CardCatalog.Core.File", "FileRefId")
                         .WithMany()
                         .HasForeignKey("File")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CardCatalog.Core.Tag", "TagRefId")
                         .WithMany()

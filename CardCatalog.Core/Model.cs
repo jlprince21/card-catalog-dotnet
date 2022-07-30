@@ -9,15 +9,11 @@ namespace CardCatalog.Core
     public class CardCatalogContext : DbContext
     {
         // computer file tables
-        public DbSet<File> Files { get; set; }
-
-        // physical object tables
-        public DbSet<Container> Containers { get; set; }
-        public DbSet<Item> Items { get; set; }
+        public DbSet<File> Files { get; set; }  = default!;
 
         // shared tables
-        public DbSet<AppliedTag> AppliedTags { get; set; }
-        public DbSet<Tag> Tags { get; set; }
+        public DbSet<AppliedTag> AppliedTags { get; set; }  = default!;
+        public DbSet<Tag> Tags { get; set; }  = default!;
 
         private readonly string _connection = Environment.GetEnvironmentVariable("CARD_CATALOG_DB_CONNECTION");
 
@@ -38,8 +34,6 @@ namespace CardCatalog.Core
             modelBuilder.Entity<File>().Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()");
             modelBuilder.Entity<Tag>().Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()");
             modelBuilder.Entity<AppliedTag>().Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()");
-            modelBuilder.Entity<Item>().Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()");
-            modelBuilder.Entity<Container>().Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()");
 
             // this is needed to set a unique constraint on TagTitle column in Tags table
             modelBuilder.Entity<Tag>()
@@ -60,16 +54,16 @@ namespace CardCatalog.Core
         [Key]
         public Guid Id { get; set; }
 
-        public string Checksum { get; set; }
+        public string Checksum { get; set; }  = default!;
 
         [Required]
         public DateTime FoundOn { get; set; }
 
         [Required]
-        public string FileName { get; set; }
+        public string FileName { get; set; }  = default!;
 
         [Required]
-        public string FilePath { get; set; }
+        public string FilePath { get; set; }  = default!;
 
         public long FileSize { get; set; }
     }
@@ -81,7 +75,7 @@ namespace CardCatalog.Core
         public Guid Id { get; set; }
 
         [Required]
-        public string TagTitle { get; set; }
+        public string TagTitle { get; set; }  = default!;
     }
 
     public class AppliedTag
@@ -91,37 +85,10 @@ namespace CardCatalog.Core
         public Guid Id { get; set; }
 
         [ForeignKey("File")]
-        public virtual File FileRefId { get; set; }
-
-        [ForeignKey("Item")]
-        public virtual Item ItemRefId { get; set; }
+        public virtual File FileRefId { get; set; }  = default!;
 
         [ForeignKey("Tag")]
         [Required]
-        public Tag TagRefId { get; set; }
-    }
-
-    public class Item
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key]
-        public Guid Id { get; set; }
-
-        [ForeignKey("Container")]
-        [Required]
-        public Container ContainerRefId { get; set; }
-
-        [Required]
-        public string Description { get; set; }
-    }
-
-    public class Container
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key]
-        public Guid Id { get; set; }
-
-        [Required]
-        public string Description { get; set; }
+        public Tag TagRefId { get; set; }  = default!;
     }
 }

@@ -1,30 +1,22 @@
 # Card Catalog Core
 
-Written in C#, this program helps collect file metadata and manage physical
-inventory of physical objects. It is a reimplementation of the Rust card_catalog
-project with more capabilities.
+Written in C#, this program helps collect file metadata. It is a
+reimplementation of the Rust card_catalog project with more capabilities.
 
-For files some things gathered include:
+Data collected about files include:
 
 1. File name
 2. Path
 3. Size
 4. XxHash checksum
+5. Date examined
 
 In addition to collecting file metadata, the program assists in indexing files
 with tools such as file tagging, search, and more.
 
-On the physical inventory side, Card Catalog helps manage a collection of
-containers and the items they hold. You can move items around, change container
-and item descriptions, and remove containers/items from the database.
-
-Librarian is the companion UI for Card Catalog's API. You can grab it
-[here](https://github.com/jlprince21/librarian-flutter).
-
 # Getting Started
 
-This application requies .NET Core 5, dotnet-ef CLI tools, and a PostgreSQL
-database.
+This application requies .NET 6, dotnet-ef CLI tools, and a PostgreSQL database.
 
 ## Environment Variables
 
@@ -79,27 +71,27 @@ dotnet run --orphans
 Using the Docker Compose file provided with this project currently doesn't run
 the migrations. To get started:
 
-1. Review and set the environment variables to your desired values.
+1. Review and set the environment variables to your desired values in `docker-compose.yml`.
 2. Run this command to start a new database, pgAdmin, and the API.
 
 ``` bash
 docker-compose up -d # Remove `-d` if you want to see output
 ```
 
-3. Login to pgAdmin. Create a new server registration and database. Run the UUID
-   extension enabling query. You will need to get the IP address of the database
-   container when creating the server in pgAdmin, use:
+3. Login to pgAdmin (likely 127.0.0.1:5050). Create a new server registration
+   and database. Run the UUID extension enabling query. You will need to get the
+   IP address of the database container when creating the server in pgAdmin, use:
 
 ``` bash
 docker ps
 docker inspect <POSTGRESQL_CONTAINER_ID> | grep IPAddress
 ```
 
-4. Run the migrations manually using the local copy of the project. On macOS
+1. Run the migrations manually using the local copy of the project. On macOS
    the connection string will use 127.0.0.1 to connect to the database.
 
 The API should now be running on port 5555. Test it with your favorite HTTP
-client or try pointing Librarian at the API and giving it a try!
+client!
 
 ## Credits
 
