@@ -1,7 +1,6 @@
-namespace CardCatalog.Api.Helpers
+namespace CardCatalog.Api.Helpers;
+
+public class AppSettings
 {
-    public class AppSettings
-    {
-        public string DbConnection { get; set; }
-    }
+    public string DbConnection { get; set; }
 }

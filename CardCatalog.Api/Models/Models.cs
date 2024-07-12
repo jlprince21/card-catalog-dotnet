@@ -1,7 +1,6 @@
-namespace CardCatalog.Api.Models
+namespace CardCatalog.Api.Models;
+
+public class ApiNewTag
 {
-    public class ApiNewTag
-    {
-        public string Title { get; set; }
-    }
+    public string Title { get; set; }
 }

@@ -16,7 +16,7 @@ with tools such as file tagging, search, and more.
 
 # Getting Started
 
-This application requies .NET 6, dotnet-ef CLI tools, and a PostgreSQL database.
+This application requies .NET 8, dotnet-ef CLI tools, and a PostgreSQL database.
 
 ## Environment Variables
 
@@ -60,10 +60,10 @@ CardCatalog.Terminal directory and:
 dotnet run --hash <ROOT_DIRECTORY>
 ```
 
-...to search for and optionally remove files no longer present (orphans):
+...to search for and optionally remove files no longer present (missing):
 
 ``` bash
-dotnet run --orphans
+dotnet run --missing
 ```
 
 ## Docker Reference
